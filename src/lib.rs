@@ -1,6 +1,40 @@
+//! # macro_find_and_replace
+//!
+//! This crate provides macros to find-and-replace tokens. 
+//! 
+//! For more information about tokens in general and what counts as a single token, see the [TokenStream](https://doc.rust-lang.org/proc_macro/struct.TokenStream.html) type in the `proc_macro` crate, which is the input and output type of procedural macros.
+
 extern crate proc_macro;
 use proc_macro::{TokenStream, TokenTree, Group};
 
+/// Replaces all occurences of a given single token with another single token.
+/// 
+/// Takes arguments in the order `replace_token!{needle, replacement, code to search}`. You may use any kind of brackets.
+/// 
+/// # Panics
+/// At compile time, if the arguments cannot be correctly parsed.
+/// 
+/// # Examples
+///
+/// Replaces all plus signs with minus signs:
+/// ```
+/// # extern crate macro_find_and_replace;
+/// # use macro_find_and_replace::replace_token;
+/// replace_token!{+, -,
+///     let x = (1 + 2) + 3;
+/// }
+/// assert_eq!(x, -4); 
+/// ```
+/// 
+/// Replaces the identifier `MY_ARRAY` with an array literal
+/// ```
+/// # extern crate macro_find_and_replace;
+/// # use macro_find_and_replace::replace_token;
+/// replace_token!{MY_ARRAY, [8, 0],
+///     let x = MY_ARRAY;
+/// }
+/// assert_eq!(x, [8, 0]);
+/// ```
 #[proc_macro]
 pub fn replace_token(raw_input: TokenStream) -> TokenStream {
     let (needle, replacement, input) = parse_args(raw_input);
@@ -24,6 +58,46 @@ impl TokenReplacer {
     } 
 }
 
+/// Replaces all occurences of a given sequence of tokens with another sequence of tokens.
+/// 
+/// Takes arguments in the form `replace_token!{[needle tokens], [replacement tokens], code to search}`. 
+/// The brackets around the needle and replacement tokens are not included in the search.
+/// You may use any kind of brackets.
+/// 
+/// # Panics
+/// At compile time, if the arguments cannot be correctly parsed.
+/// 
+/// # Examples
+/// 
+/// Replaces the sequence `9 + 10` with `21`. Note that spacing between tokens is generally ignored:
+/// ```
+/// # extern crate macro_find_and_replace;
+/// # use macro_find_and_replace::replace_token_sequence;
+/// replace_token_sequence!{[9 + 10], [21],
+///     let x = 9+10;
+/// }
+/// assert_eq!(x, 21);
+/// ```
+/// 
+/// Replaces the content of a match arm:
+/// ```
+/// # extern crate macro_find_and_replace;
+/// # use macro_find_and_replace::replace_token_sequence;
+/// enum Numbers {
+///     I32(i32),
+///     I64(i64),
+///     ISize(isize)
+/// }
+/// let n = Numbers::I32(12);
+/// replace_token_sequence!{[MY_ARM], [(y * 2) as f64],
+///     let x = match(n) {
+///         Numbers::I32(y) => MY_ARM,
+///         Numbers::I64(y) => MY_ARM,
+///         Numbers::ISize(y) => MY_ARM,
+///     };
+/// }
+/// assert_eq!(x, 24.0);
+/// ```
 #[proc_macro]
 pub fn replace_token_sequence(raw_input: TokenStream) -> TokenStream {
     // Destructure or panic
