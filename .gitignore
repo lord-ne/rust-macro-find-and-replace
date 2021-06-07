@@ -1,2 +1,3 @@
 /target
 Cargo.lock
+!/target/doc/macro_find_and_replace/
