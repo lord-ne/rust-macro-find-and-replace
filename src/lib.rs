@@ -26,7 +26,7 @@ use proc_macro::{TokenStream, TokenTree, Group};
 /// assert_eq!(x, -4); 
 /// ```
 /// 
-/// Replaces the identifier `MY_ARRAY` with an array literal
+/// Replaces the identifier `MY_ARRAY` with an array literal:
 /// ```
 /// # extern crate macro_find_and_replace;
 /// # use macro_find_and_replace::replace_token;
@@ -60,9 +60,11 @@ impl TokenReplacer {
 
 /// Replaces all occurences of a given sequence of tokens with another sequence of tokens.
 /// 
-/// Takes arguments in the form `replace_token!{[needle tokens], [replacement tokens], code to search}`. 
+/// Takes arguments in the form `replace_token_sequence!{[needle tokens], [replacement tokens], code to search}`.
 /// The brackets around the needle and replacement tokens are not included in the search.
 /// You may use any kind of brackets.
+/// Matching is structural: token groups can only be matched as a whole. For example
+/// you cannot use an incomplete needle such as `abc(`.
 /// 
 /// # Panics
 /// At compile time, if the arguments cannot be correctly parsed.

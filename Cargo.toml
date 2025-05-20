@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = ["Noam Elul <noamelul@gmail.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
-description = "Provides macros to find-and-repalce tokens."
+description = "Provides macros to find-and-replace tokens."
 repository = "https://github.com/lord-ne/rust-macro-find-and-replace"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
